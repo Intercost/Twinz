@@ -1272,6 +1272,35 @@
             }
         }
 
+        window.openLightbox = function(url, type, caption) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const content = document.getElementById('lightbox-content');
+            const captionElem = document.getElementById('lightbox-caption');
+            
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            captionElem.textContent = caption || '';
+
+            if (type === 'image') {
+                content.innerHTML = `<img src="${url}" class="max-h-[80vh] mx-auto rounded-lg shadow-2xl">`;
+            } else if (type === 'video') {
+                content.innerHTML = `
+                    <video controls autoplay class="max-h-[80vh] mx-auto rounded-lg shadow-2xl">
+                        <source src="${url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>`;
+            }
+        }
+
+        window.closeLightbox = function() {
+            const overlay = document.getElementById('lightbox-overlay');
+            const content = document.getElementById('lightbox-content');
+            
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            content.innerHTML = ''; // Clear content to stop video playback
+        }
+
         async function uploadMedia() {
             const uploadInput = document.getElementById('media-upload-input');
             const captionInput = document.getElementById('media-caption-input');
@@ -1317,6 +1346,7 @@
             loadMediaGallery(); // Reload gallery to show new item
         }
 
+        
         async function deleteMediaItem(fileName, event) {
             event.stopPropagation(); // Prevent opening lightbox if clicking delete button
 
@@ -1420,5 +1450,19 @@
             loadMediaGallery();
         });
     </script>
+
+    <div id="lightbox-overlay" class="fixed inset-0 bg-black bg-opacity-90 z-[100] hidden flex-col items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white hover:text-gray-300 z-[110]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        
+        <div class="max-w-4xl w-full flex flex-col items-center">
+            <div id="lightbox-content" class="w-full">
+                </div>
+            <p id="lightbox-caption" class="mt-4 text-white text-lg font-medium text-center"></p>
+        </div>
+    </div>
 </body>
 </html>
